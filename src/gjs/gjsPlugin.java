@@ -9,7 +9,8 @@ import mindustry.mod.Plugin;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
 
 public class gjsPlugin extends Plugin {
 
@@ -53,8 +54,10 @@ public class gjsPlugin extends Plugin {
                 str.append(args[k]);
             }
             if(!envs.containsKey(env)) {
+
                 String logFile=LogFi.child("log-"+env+ ".nlog").absolutePath();
-                envs.put(env,Context.newBuilder("js").option("log.file",logFile).build());
+
+                envs.put(env,Context.newBuilder("js").allowAllAccess(true).option("log.file",logFile).build());
                 Log.info("[GJS]:[New Environment<@>Start]",env);
                 Log.info("[GJS]:[Log in @ ]",logFile);
             }
@@ -66,21 +69,22 @@ public class gjsPlugin extends Plugin {
                 Log.err("[GJS]:@",error.getMessage());
             }
         });
-        handler.register("gjp","[class/packet] [env] [data]","",(args)->{
+        handler.register("gjp","<class/packet> <env> <data>","",(args)->{
             if(!envs.containsKey(args[1])){
                 Log.err("[GJP][No Env]");
                 return;
             }
-            var env=envs.get(args[1]);
+
             var data=args[2];
             switch (args[0]){
                 case "class":
                     try {
                         var tmp=Class.forName(data);
-                        env.getBindings("js").putMember(data,tmp);
+                        envs.get(args[1]).getBindings("js").putMember(tmp.getSimpleName(),tmp);
 
+                        Log.info("[GLP][Input success][@ to @]",tmp.toString(),tmp.getSimpleName());
                     } catch (ClassNotFoundException e) {
-                        Log.err("[GJP][Class][@]",e.getMessage());
+                        Log.err("[GJP][Class No find][@]",e.getMessage());
                     }
                     break;
                 case "packet":
