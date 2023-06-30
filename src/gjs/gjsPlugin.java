@@ -69,7 +69,7 @@ public class gjsPlugin extends Plugin {
                 Log.err("[GJS]:@",error.getMessage());
             }
         });
-        handler.register("gjp","<class/packet> <env> <data>","",(args)->{
+        handler.register("gja","<push> <env> <data>","",(args)->{
             if(!envs.containsKey(args[1])){
                 Log.err("[GJP][No Env]");
                 return;
@@ -77,21 +77,17 @@ public class gjsPlugin extends Plugin {
 
             var data=args[2];
             switch (args[0]){
-                case "class":
-                    try {
-                        var tmp=Class.forName(data);
-                        envs.get(args[1]).getBindings("js").putMember(tmp.getSimpleName(),tmp);
-
-                        Log.info("[GLP][Input success][@ to @]",tmp.toString(),tmp.getSimpleName());
-                    } catch (ClassNotFoundException e) {
-                        Log.err("[GJP][Class No find][@]",e.getMessage());
-                    }
-                    break;
-                case "packet":
-
+                case "push":
+			var context=envs.get(args[1]);                                                                         try {
+				                var res = context.eval("js", "var "+data+" = Java.type('" +data+ "')");
+						                Log.info("[GJA]:@", res.toString());
+								            }catch(PolyglotException error){
+										                    Log.err("[GJA]:@",error.getMessage());
+									                }
+                    
                     break;
                 default:
-                    Log.err("[GJP][No Action]");
+                    Log.err("[GJA][No Action]");
             }
         });
     }
