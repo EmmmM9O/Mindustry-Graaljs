@@ -36,10 +36,17 @@ public class gjsPlugin extends Plugin {
             switch (args[0]) {
                 case "import" -> {
                     if (args.length == 1) {
-
                         Log.err("[GJA][need a className]");
                         return;
                     }
+                    if(args[1].endsWith(".*")){
+                        try {
+                            GlobalEnv.importPackage(args[1].substring(0, args[1].length() - 2));
+                            Log.info("[GJA][success import [@]]",args[1]);
+                        }catch(RuntimeException e){
+                            Log.err("[GJA][Import Err][@]",e);
+                        }
+                    }else{
                     try {
                         GlobalEnv.Import(args[1]);
                         Log.info("[GJA][success import [@]]", args[1]);
@@ -47,9 +54,12 @@ public class gjsPlugin extends Plugin {
                         Log.err("[GJA][No find class][@]", args[1]);
                     } catch (PolyglotException err) {
                         Log.err("[GJA][running error][@]", err.getMessage());
-                    }
+                    }}
                 }
-                case "putI" -> GlobalEnv.putImport();
+                case "putI" -> {
+                    GlobalEnv.putImport();
+                    Log.info("[GJA][put Import function]");
+                }
                 case "logDir" -> Log.info("[GJA][Log Dir][@]", LogFi.absolutePath());
                 default -> Log.err("[GJA][Error Action]");
             }
