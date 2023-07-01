@@ -124,7 +124,7 @@ public class jsEnv {
     public void Import(Class<?> c) throws PolyglotException {
         var packet = c.getPackage();
         ImportPath(packet.getName());
-        eval(c.getName() + " = java.type(" + c.getName() + ")");
+        eval(c.getName() + " = Java.type(" + c.getName() + ")");
     }
 
     public void putMember(String str, Object obj) {
@@ -141,7 +141,7 @@ public class jsEnv {
             try (ScanResult scanResult = new ClassGraph().whitelistPackages(packageName).scan()) {
                 scanResult.getAllClasses().forEach((ClassInfo classInfo) -> {
                     try {
-                        eval(packageName + '.' + classInfo.getSimpleName() + " = java.type(" + packageName + "." + classInfo.getSimpleName() + ")");
+                        eval(packageName + '.' + classInfo.getSimpleName() + " = Java.type(" + packageName + "." + classInfo.getSimpleName() + ")");
                     } catch (PolyglotException e) {
                         throw new RuntimeException("[GJS][Import][Js Error][" + e.getMessage() + "]");
                     }
