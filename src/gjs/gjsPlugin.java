@@ -32,7 +32,7 @@ public class gjsPlugin extends Plugin {
                 Log.err(err.toString());
             }
         }));
-        handler.register("gja","<import/putI/logDir>","[args...]",(args, parameter) -> {
+        handler.register("gja","<import/putI/logDir> [args...]","",(args, parameter) -> {
             switch (args[0]) {
                 case "import" -> {
                     if (args.length == 1) {
