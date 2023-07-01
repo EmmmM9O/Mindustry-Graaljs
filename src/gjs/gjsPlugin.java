@@ -31,7 +31,7 @@ public class gjsPlugin extends Plugin {
 
                 }
             }
-        },10,time);
+        },time,time);
     }
     @Override
     public void init() {
