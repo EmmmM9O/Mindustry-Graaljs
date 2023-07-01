@@ -44,7 +44,7 @@ public class gjsPlugin extends Plugin {
                             GlobalEnv.importPackage(args[1].substring(0, args[1].length() - 2));
                             Log.info("[GJA][success import [@]]",args[1]);
                         }catch(RuntimeException e){
-                            Log.err("[GJA][Import Err][@]",e);
+                            Log.err("[GJA][Import Err][@]",e.getMessage());
                         }
                     }else{
                     try {

@@ -3,9 +3,9 @@ package gjs;
 import arc.files.Fi;
 import arc.func.Cons;
 import arc.func.Func;
+import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
-import io.github.classgraph.ClassGraph;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
@@ -109,18 +109,22 @@ public class jsEnv {
         boolean flag = true;
         for (var i : list) {
             str.append(i);
+            String res = "";
             try {
-                eval(str.toString());
+                res = eval(str.toString()).toString();
             } catch (PolyglotException err) {
                 eval((flag ? "var " : "") + str + " = {}");
             }
+            if (res == "undefined") eval((flag ? "var " : "") + str + " = {}");
             str.append('.');
             flag = false;
         }
     }
-    public void Import(String className) throws PolyglotException,ClassNotFoundException{
+
+    public void Import(String className) throws PolyglotException, ClassNotFoundException {
         Import(Class.forName(className));
     }
+
     public void Import(Class<?> c) throws PolyglotException {
         var packet = c.getPackage();
         ImportPath(packet.getName());
@@ -153,20 +157,28 @@ public class jsEnv {
     }
 
     public void putImport() {
-        Cons<String> func = (String str) -> {
-            if (str.endsWith(".*")) {
-                var packageName = str.substring(0, str.length() - 2);
-                importPackage(packageName);
-            } else {
-                try {
-                    Import(Class.forName(str));
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("[GJS][Import][No find class][" + str + "]");
-                } catch (PolyglotException e) {
-                    throw new RuntimeException("[GJS][Import][Js Error][" + e.getMessage() + "]");
-                }
-            }
-        };
-        context.getBindings("js").putMember("Import", context.asValue(func));
+        context.getBindings("js").putMember("GJS", new GJS(this));
     }
+    public class GJS{
+	    private jsEnv env;
+	    public GJS(jsEnv e){env=e;}
+    public String Import(String str){
+        if (str.endsWith(".*")) {
+            var packageName = str.substring(0, str.length() - 2);
+            env.importPackage(packageName);
+	    return "[success][import]["+str+"]";
+        } else {
+            try {
+                env.Import(Class.forName(str));
+		return "[success][import]["+str+"]";
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("[GJS][Import][No find class][" + str + "]");
+            } catch (PolyglotException e) {
+                throw new RuntimeException("[GJS][Import][Js Error][" + e.getMessage() + "]");
+            }
+        }
+	
+    }
+    }
+
 }
