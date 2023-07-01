@@ -112,7 +112,7 @@ public class jsEnv {
             try {
                 eval(str.toString());
             } catch (PolyglotException err) {
-                eval((flag ? "var" : "") + str + " = {}");
+                eval((flag ? "var " : "") + str + " = {}");
             }
             str.append('.');
             flag = false;
