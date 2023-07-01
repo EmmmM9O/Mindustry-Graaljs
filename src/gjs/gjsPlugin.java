@@ -3,91 +3,55 @@ package gjs;
 import arc.files.Fi;
 import arc.util.CommandHandler;
 import arc.util.Log;
-import arc.util.Timer;
 import mindustry.Vars;
 import mindustry.mod.Plugin;
-import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 
-import java.util.Date;
-import java.util.HashMap;
-
 public class gjsPlugin extends Plugin {
+    private jsEnv GlobalEnv;
+    private Fi LogFi;
 
-    public HashMap<String,Context> envs=new HashMap<>();
-    public Fi serverFi=Fi.get("/");
-    public Fi LogFi=Fi.get("/");
-
-    public void startLogTime(){
-        long time=60*60*12;
-        Timer.schedule(()->{
-            Log.info("[GJS]--------[arrange all logs]");
-            for(var f:LogFi.list()){
-                if(f.name().endsWith(".nlog")){
-                    var tmpFi=LogFi.child(f.name().substring(0,f.name().length()-4)+'-'+new Date().getTime()+ ".log");
-                    f.moveTo(tmpFi);
-
-                    Log.info("[GJS]:@",tmpFi.name());
-
-                }
-            }
-        },time,time);
-    }
     @Override
     public void init() {
         Log.info("[GJS][Start]");
-        serverFi= Vars.mods.getMod(gjsPlugin.class).file.parent().parent();
-        LogFi=serverFi.child("js-logs");
-        if(!LogFi.exists()){
-            LogFi.mkdirs();
-        }
-        Log.info("[GJS][will log in @]",LogFi.path());
-        startLogTime();
+        LogFi = Vars.mods.getMod(gjsPlugin.class).file.parent().parent().child("js-log");
+        if (!LogFi.exists()) LogFi.mkdirs();
+        GlobalEnv = new jsEnv(LogFi, true);
     }
 
     @Override
     public void registerServerCommands(CommandHandler handler) {
-        handler.register("gjs","<env> <args...>","run js with Graaljs",(args) ->{
-            var env=args[0];
-            var str=new StringBuilder();
-            for(int k=1;k<args.length;k++){
-                str.append(args[k]);
+        handler.register("gjs", "<args...>", "", ((args, parameter) -> {
+            StringBuilder str = new StringBuilder();
+            for (var i : args) {
+                str.append(i);
             }
-            if(!envs.containsKey(env)) {
-
-                String logFile=LogFi.child("log-"+env+ ".nlog").absolutePath();
-
-                envs.put(env,Context.newBuilder("js").allowAllAccess(true).option("log.file",logFile).build());
-                Log.info("[GJS]:[New Environment<@>Start]",env);
-                Log.info("[GJS]:[Log in @ ]",logFile);
-            }
-            var context=envs.get(env);
             try {
-                var res = context.eval("js", str.toString());
-                Log.info("[GJS]:@", res.toString());
-            }catch(PolyglotException error){
-                Log.err("[GJS]:@",error.getMessage());
+                Log.info(GlobalEnv.eval(str.toString()).toString());
+            } catch (PolyglotException err) {
+                Log.err(err.toString());
             }
-        });
-        handler.register("gja","<push> <env> <data>","",(args)->{
-            if(!envs.containsKey(args[1])){
-                Log.err("[GJP][No Env]");
-                return;
-            }
+        }));
+        handler.register("gja","<import/putI/logDir>","[args...]",(args, parameter) -> {
+            switch (args[0]) {
+                case "import" -> {
+                    if (args.length == 1) {
 
-            var data=args[2];
-            switch (args[0]){
-                case "push":
-			var context=envs.get(args[1]);                                                                         try {
-				                var res = context.eval("js", "var "+data+" = Java.type('" +data+ "')");
-						                Log.info("[GJA]:@", res.toString());
-								            }catch(PolyglotException error){
-										                    Log.err("[GJA]:@",error.getMessage());
-									                }
-                    
-                    break;
-                default:
-                    Log.err("[GJA][No Action]");
+                        Log.err("[GJA][need a className]");
+                        return;
+                    }
+                    try {
+                        GlobalEnv.Import(args[1]);
+                        Log.info("[GJA][success import [@]]", args[1]);
+                    } catch (ClassNotFoundException err) {
+                        Log.err("[GJA][No find class][@]", args[1]);
+                    } catch (PolyglotException err) {
+                        Log.err("[GJA][running error][@]", err.getMessage());
+                    }
+                }
+                case "putI" -> GlobalEnv.putImport();
+                case "logDir" -> Log.info("[GJA][Log Dir][@]", LogFi.absolutePath());
+                default -> Log.err("[GJA][Error Action]");
             }
         });
     }

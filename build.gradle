@@ -37,6 +37,7 @@ dependencies{
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
 implementation "org.graalvm.sdk:graal-sdk:$graalvmVersion"
     implementation "org.graalvm.js:js:$graalvmVersion"
+    implementation 'io.github.classgraph:classgraph:4.8.83'
 //implementation "org.graalvm.js:js-scriptengine:$graalvmVersion"
 //implementation "org.graalvm.tools:profiler:$graalvmVersion"
 //implementation "org.graalvm.tools:chromeinspector:$graalvmVersion"
