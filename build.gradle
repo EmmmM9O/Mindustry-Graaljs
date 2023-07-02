@@ -22,17 +22,19 @@ repositories{
     mavenCentral()
 
 }
-java {
-	withSourcesJar()
-}
+afterEvaluate {
 publishing {
     publications {
         maven(MavenPublication) {
+		groupId = group
+                artifactId = 'library'
+                version = version
 		from components.java
         }
     }
 }
-
+}
+jar.finalizedBy(publishToMavenLocal)
 ext{
     //the build number that this mod is made for
     mindustryVersion = 'v143.1'
@@ -45,7 +47,7 @@ ext{
 allprojects{
 
    tasks.withType(JavaCompile){
-        options.compilerArgs.addAll(['--release', '17'])
+        options.compilerArgs.addAll(['--release', '8'])
     }
 }
 
@@ -121,4 +123,7 @@ task deploy(type: Jar){
             delete "$buildDir/libs/${project.archivesBaseName}Android.jar"
         }
     }
+}
+wrapper {
+    gradleVersion = '7.3.3'
 }

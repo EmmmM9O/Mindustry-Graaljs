@@ -1,2 +1,6 @@
 jdk:
     - openjdk17
+install:
+    - ./gradlew wrapper
+    - echo "Building..."
+    - ./gradlew jar
