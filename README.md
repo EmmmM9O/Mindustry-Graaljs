@@ -9,4 +9,5 @@ Add `JsEnv` as Environment of JS
 - Download from actions
 - Build Yourself `./gradlew jar`
 ### Use this library
-> wait
+1. Add `compileOnly 'com.gitee.novarc:Mindustry-Graaljs:v1.1.1'` to gradle
+2. Add thisMod to Dependency List
