@@ -1,4 +1,6 @@
 apply plugin: "java"
+apply plugin: 'maven'
+group = 'com.gitee.'
 
 version '1.0'
 
