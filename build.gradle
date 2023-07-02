@@ -1,5 +1,7 @@
-apply plugin: "java"
-apply plugin: 'maven'
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
 group = 'com.gitee.novarc'
 
 version '1.0'
