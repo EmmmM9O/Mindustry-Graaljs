@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'maven'
+    id 'maven-publish'
 }
 group = 'com.gitee.novarc'
 
@@ -22,7 +22,17 @@ repositories{
     mavenCentral()
 
 }
-
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+publishing {
+    publications {
+        maven(MavenPublication) {
+		from components.java
+        }
+    }
+}
 ext{
     //the build number that this mod is made for
     mindustryVersion = 'v143.1'
