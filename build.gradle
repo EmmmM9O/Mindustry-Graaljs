@@ -5,11 +5,11 @@ plugins {
 group = 'com.gitee.novarc'
 
 version '1.0'
-java {
-    toolChains {
-        jdk("17")
+/*java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
-}
+}*/
 targetCompatibility = 17
 sourceCompatibility = JavaVersion.VERSION_17
 
@@ -33,7 +33,8 @@ ext{
 
 //java 8 backwards compatibility flag
 allprojects{
-    tasks.withType(JavaCompile){
+
+   tasks.withType(JavaCompile){
         options.compilerArgs.addAll(['--release', '8'])
     }
 }
