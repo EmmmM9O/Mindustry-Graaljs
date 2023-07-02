@@ -1,4 +1,5 @@
 # Mindustry-Graaljs-Plugin
+[中文](https://gitee.com/novarc/Mindustry-Graaljs/blob/master/CN-README.md)
 ### Run Graal.js in Mindustry
 Run ES2022 JavaScript using grail. js from grailvm
 Add `gjs <code...>` to run js
