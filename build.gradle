@@ -3,7 +3,11 @@ apply plugin: 'maven'
 group = 'com.gitee.novarc'
 
 version '1.0'
-
+java {
+    toolChains {
+        jdk("17")
+    }
+}
 targetCompatibility = 17
 sourceCompatibility = JavaVersion.VERSION_17
 
