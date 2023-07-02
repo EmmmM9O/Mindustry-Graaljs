@@ -121,6 +121,4 @@ task deploy(type: Jar){
         }
     }
 }
-wrapper {
-    gradleVersion = '7.3.3'
-}
+
