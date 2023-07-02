@@ -22,7 +22,6 @@ repositories{
     mavenCentral()
 
 }
-afterEvaluate {
 publishing {
     publications {
         maven(MavenPublication) {
@@ -33,8 +32,6 @@ publishing {
         }
     }
 }
-}
-jar.finalizedBy(publishToMavenLocal)
 ext{
     //the build number that this mod is made for
     mindustryVersion = 'v143.1'
