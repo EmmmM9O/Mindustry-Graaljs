@@ -2,5 +2,7 @@ jdk:
     - openjdk17
 install:
     - ./gradlew wrapper
+    - ./gradlew publishToMavenLocal
+    - echo -n > gradle.properties
     - echo "Building..."
     - ./gradlew jar
