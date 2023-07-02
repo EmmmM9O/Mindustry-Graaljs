@@ -24,7 +24,6 @@ repositories{
 }
 java {
 	withSourcesJar()
-	withJavadocJar()
 }
 publishing {
     publications {
@@ -33,6 +32,7 @@ publishing {
         }
     }
 }
+
 ext{
     //the build number that this mod is made for
     mindustryVersion = 'v143.1'
@@ -45,7 +45,7 @@ ext{
 allprojects{
 
    tasks.withType(JavaCompile){
-        options.compilerArgs.addAll(['--release', '8'])
+        options.compilerArgs.addAll(['--release', '17'])
     }
 }
 
