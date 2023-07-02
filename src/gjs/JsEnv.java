@@ -1,7 +1,6 @@
 package gjs;
 
 import arc.files.Fi;
-import arc.func.Cons;
 import arc.func.Func;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -9,18 +8,19 @@ import io.github.classgraph.ScanResult;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
-
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-public class jsEnv {
+public class JsEnv {
     private static Integer count = 0;
     private final Integer id = count++;
-    private static final HashMap<Integer, jsEnv> envs = new HashMap<>();
+    private static final HashMap<Integer, JsEnv> envs = new HashMap<>();
 
-    public static HashMap<Integer, jsEnv> getEnvs() {
+    public static HashMap<Integer, JsEnv> getEnvs() {
         return envs;
     }
 
@@ -54,37 +54,37 @@ public class jsEnv {
     };
     public Fi logDir;
 
-    public jsEnv() {
+    public JsEnv() {
         logDir = null;
         context = Context.newBuilder("js").logHandler(logHandler).build();
         put();
     }
 
-    public jsEnv(boolean allow) {
+    public JsEnv(boolean allow) {
         logDir = null;
         context = Context.newBuilder("js").allowAllAccess(allow).logHandler(logHandler).build();
         put();
     }
 
-    public jsEnv(Fi path, boolean allow) {
+    public JsEnv(Fi path, boolean allow) {
         logDir = path;
         context = Context.newBuilder("js").allowAllAccess(allow).logHandler(logHandler).build();
         put();
     }
 
-    public jsEnv(Fi path) {
+    public JsEnv(Fi path) {
         logDir = path;
         context = Context.newBuilder("js").logHandler(logHandler).build();
         put();
     }
 
-    public jsEnv(Fi path, Func<Context.Builder, Context.Builder> build) {
+    public JsEnv(Fi path, Func<Context.Builder, Context.Builder> build) {
         logDir = path;
         context = build.get(Context.newBuilder("js").logHandler(logHandler)).build();
         put();
     }
 
-    public jsEnv(Func<Context.Builder, Context.Builder> build) {
+    public JsEnv(Func<Context.Builder, Context.Builder> build) {
         logDir = null;
         context = build.get(Context.newBuilder("js").logHandler(logHandler)).build();
         put();
@@ -115,7 +115,7 @@ public class jsEnv {
             } catch (PolyglotException err) {
                 eval((flag ? "var " : "") + str + " = {}");
             }
-            if (res == "undefined") eval((flag ? "var " : "") + str + " = {}");
+            if (Objects.equals(res, "undefined")) eval((flag ? "var " : "") + str + " = {}");
             str.append('.');
             flag = false;
         }
@@ -157,28 +157,48 @@ public class jsEnv {
     }
 
     public void putImport() {
-        context.getBindings("js").putMember("GJS", new GJS(this));
+        context.getBindings("js").putMember("GJS",new GJS(this));
+        eval("function Import(path){GJS.Import(path)}");
     }
-    public class GJS{
-	    private jsEnv env;
-	    public GJS(jsEnv e){env=e;}
-    public String Import(String str){
-        if (str.endsWith(".*")) {
-            var packageName = str.substring(0, str.length() - 2);
-            env.importPackage(packageName);
-	    return "[success][import]["+str+"]";
-        } else {
-            try {
-                env.Import(Class.forName(str));
-		return "[success][import]["+str+"]";
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("[GJS][Import][No find class][" + str + "]");
-            } catch (PolyglotException e) {
-                throw new RuntimeException("[GJS][Import][Js Error][" + e.getMessage() + "]");
-            }
+    public void eraseAll(){
+        var bindings = context.getBindings("js");
+        for(String key:bindings.getMemberKeys()){
+
+            bindings.putMember(key,null);
         }
-	
     }
+    public Map<String,Value> Members(){
+        var bindings=context.getBindings("js");
+        Map<String,Value> map=new HashMap<>();
+        for(String key:bindings.getMemberKeys()){
+            map.put(key,bindings.getMember(key));
+        }
+        return map;
+    }
+    public static class GJS {
+        private final JsEnv env;
+
+        public GJS(JsEnv e) {
+            env = e;
+        }
+
+        public String Import(String str) {
+            if (str.endsWith(".*")) {
+                var packageName = str.substring(0, str.length() - 2);
+                env.importPackage(packageName);
+                return "[success][import][" + str + "]";
+            } else {
+                try {
+                    env.Import(Class.forName(str));
+                    return "[success][import][" + str + "]";
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("[GJS][Import][No find class][" + str + "]");
+                } catch (PolyglotException e) {
+                    throw new RuntimeException("[GJS][Import][Js Error][" + e.getMessage() + "]");
+                }
+            }
+
+        }
     }
 
 }

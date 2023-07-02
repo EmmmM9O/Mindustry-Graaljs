@@ -8,7 +8,7 @@ import mindustry.mod.Plugin;
 import org.graalvm.polyglot.PolyglotException;
 
 public class gjsPlugin extends Plugin {
-    private jsEnv GlobalEnv;
+    private JsEnv GlobalEnv;
     private Fi LogFi;
 
     @Override
@@ -16,7 +16,7 @@ public class gjsPlugin extends Plugin {
         Log.info("[GJS][Start]");
         LogFi = Vars.mods.getMod(gjsPlugin.class).file.parent().parent().child("js-log");
         if (!LogFi.exists()) LogFi.mkdirs();
-        GlobalEnv = new jsEnv(LogFi, true);
+        GlobalEnv = new JsEnv(LogFi, true);
     }
 
     @Override
