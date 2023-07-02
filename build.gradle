@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
 }
-group = 'com.gitee.novarc'
+group = 'io.github.EmmmM9O'
 
 version '1.0'
 /*java {
@@ -20,14 +20,10 @@ repositories{
     maven {url 'https://maven.aliyun.com/nexus/content/groups/public/'}
     mavenLocal()
     mavenCentral()
-
 }
 publishing {
     publications {
         maven(MavenPublication) {
-		groupId = group
-                artifactId = 'library'
-                version = version
 		from components.java
         }
     }
