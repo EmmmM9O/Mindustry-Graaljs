@@ -1,6 +1,6 @@
 apply plugin: "java"
 apply plugin: 'maven'
-group = 'com.gitee.'
+group = 'com.gitee.novarc'
 
 version '1.0'
 
