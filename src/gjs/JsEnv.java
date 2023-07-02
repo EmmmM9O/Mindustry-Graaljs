@@ -175,6 +175,9 @@ public class JsEnv {
         }
         return map;
     }
+    public void putEnv(){
+    	context.getBindings("js").putMember("__ENV__",this);
+    }
     public static class GJS {
         private final JsEnv env;
 

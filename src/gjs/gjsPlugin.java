@@ -61,6 +61,10 @@ public class gjsPlugin extends Plugin {
                     Log.info("[GJA][put Import function]");
                 }
                 case "logDir" -> Log.info("[GJA][Log Dir][@]", LogFi.absolutePath());
+		case "putE" -> {
+			GlobalEnv.putEnv();
+			Log.info("[GJA][put to __ENV__");
+		}
                 default -> Log.err("[GJA][Error Action]");
             }
         });
